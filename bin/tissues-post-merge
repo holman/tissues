@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'things'
+require 'octopi'
+include Octopi
+
+class String
+  def to_state
+    to_s == 'open' ? :open : :closed
+  end
+
+  def to_status
+    to_s == 'open' ? :open : :completed
+  end
+end
+
+class Things::Todo
+  def number
+    name.scan(/\[\#([0-9]+)\]/).first
+  end
+end
+
+def origin_path
+  origin = File.join('.git','hooks','tissues_origin')
+  if File.exist?(origin)
+    File.open(origin).readline
+  else
+    `git remote -v | grep fetch`.split(':').last.split('.git ').first
+  end
+end
+
+def name_with_id(issue)
+  "[##{issue.number}] #{issue.title}"
+end
+
+authenticated do
+  @origin_path = origin_path
+  area   = Things::Area.find(@origin_path)
+  area ||= Things::Area.create(:name => @origin_path)
+  local_todos = area.todos
+  sync_back_to_github = []
+  
+  repository = Repository.find(:name => @origin_path.split('/').last,
+                               :user => @origin_path.split('/').first)
+  repository.all_issues.each do |issue|
+    if todo = Things::Todo.find(name_with_id(issue))
+      todo.area = area
+      unless todo.completed?
+        todo.status = issue.state.to_status
+      else
+        sync_back_to_github << todo
+      end
+      todo.notes = issue.body
+      todo.save
+      todo.reference.area.set(area.reference)
+    else
+      todo = Things::Todo.create(
+        :name   => name_with_id(issue),
+        :status => issue.state.to_status,
+        :notes  => issue.body,
+        :area   => area
+      )
+    end
+    local_todos.reject!{|todo| todo.name == name_with_id(issue)}
+  end
+  
+  local_todos.each do |todo|
+    issue = Issue.open(
+      :params => {
+        :title => todo.name,
+        :state => todo.status.to_s.to_state,
+        :body => todo.notes
+      },
+      :repository => repository
+    )
+    todo.name = name_with_id(issue)
+    todo.save
+    todo.reference.area.set(area.reference) # resave area association
+  end
+  
+  sync_back_to_github.each do |todo|
+    issue = Issue.find(:repository => repository, :number => todo.number)
+    (todo.status == 'open') ? issue.reopen! : issue.close!
+  end
+end

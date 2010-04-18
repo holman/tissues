@@ -1,3 +1,10 @@
 # tissues
+**t**hings.app + github **issues** 
 
-Oh, quit your crying.
+
+## installation
+
+To install, follow the following:
+
+- jesus christ don't try to install this yet
+- for reals
