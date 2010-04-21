@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'tissues'
   s.version           = '0.0.1'
-  s.date              = '2010-04-17'
+  s.date              = '2010-04-21'
   s.rubyforge_project = 'tissues'
 
   ## Make sure your summary is short. The description may be as long
@@ -54,7 +54,13 @@ Gem::Specification.new do |s|
   ## THE MANIFEST COMMENTS, they are used as delimiters by the task.
   # = MANIFEST =
   s.files = %w[
+    LICENSE
     README.markdown
+    Rakefile
+    bin/tissues
+    bin/tissues-post-merge
+    lib/tissues.rb
+    tissues.gemspec
   ]
   # = MANIFEST =
 

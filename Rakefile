@@ -108,6 +108,11 @@ namespace :release do
     sh "gem build #{gemspec_file}"
     sh "mv #{gem_file} pkg"
   end
+  
+  desc "build and install #{name} version #{version} locally"
+  task :install => :build do
+    sh "gem install pkg/#{gem_file}"
+  end
 
   desc "update #{name}.gemspec"
   task :gemspec => 'release:gemspec:generate'
