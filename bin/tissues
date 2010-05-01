@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
+require 'vendor/octopi-0.2.9/lib/octopi'
 require 'lib/tissues'
 
 case ARGV[0]
+when 'nonexistent'
 else
   Tissues::Sync.go!
 end
