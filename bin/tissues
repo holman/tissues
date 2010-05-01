@@ -1,48 +1,7 @@
 #!/usr/bin/env ruby
-require 'ftools'
-
-def instructional_text
-  puts "Run `tissues install` to add Things + Issues integration to your project"
-  exit 1  
-end
-
-def hook_file
-  File.join('.git','hooks','post-merge')
-end
-
-def check_existing_hook
-  if File.exist?(hook_file)
-    puts "You already have a post-merge hook. I ain't touchin' that. So instead, try running"+
-         "`tissues view_hook` to view the entire hook and manually install it yourself."
-    exit 1
-  end
-end
-
-def install_hook
-  hook = File.join(File.dirname(__FILE__),'tissues-post-merge')
-  File.copy(hook,hook_file,true)
-  File.chmod 0755, hook_file
-end
-
-def run_hook
-  system File.join(File.dirname(__FILE__),'tissues-post-merge')
-end
-
-def change_origin(new_origin)
-  origin = File.new(File.join('.git','hooks','tissues_origin'), "w+")
-  origin.puts(new_origin)
-end
+require 'lib/tissues'
 
 case ARGV[0]
-when 'install'
-  check_existing_hook
-  install_hook
-when 'update'
-  install_hook
-when 'origin'
-  change_origin(ARGV[1])
-when 'help'
-  instructional_text
 else
-  run_hook
+  Tissues::Sync.go!
 end

@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'tissues'
   s.version           = '0.0.1'
-  s.date              = '2010-04-21'
+  s.date              = '2010-04-30'
   s.rubyforge_project = 'tissues'
 
   ## Make sure your summary is short. The description may be as long
@@ -32,7 +32,7 @@ Gem::Specification.new do |s|
   # s.extensions = %w[ext/extconf.rb]
 
   ## If your gem includes any executables, list them here.
-  s.executables = ["tissues", "tissues-post-merge"]
+  s.executables = ["tissues"]
   s.default_executable = 'tissues'
 
   ## Specify any RDoc options here. You'll want to add your README and
@@ -58,8 +58,10 @@ Gem::Specification.new do |s|
     README.markdown
     Rakefile
     bin/tissues
-    bin/tissues-post-merge
     lib/tissues.rb
+    lib/tissues/helpers.rb
+    lib/tissues/patches.rb
+    lib/tissues/sync.rb
     tissues.gemspec
   ]
   # = MANIFEST =
