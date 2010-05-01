@@ -67,7 +67,6 @@ module Tissues
                       last.
                       split('.git ').
                       first
-      @origin_path = 'holman/tissuestest'
     end
 
   end
