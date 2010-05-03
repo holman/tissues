@@ -1,3 +1,12 @@
+#
+# You are cheating:
+#
+# Things::Todo
+#   status: open, completed
+# Issue
+#   state: open, closed
+#
+
 module Tissues
   module Sync
     include Octopi
@@ -14,10 +23,10 @@ module Tissues
         repository.all_issues.each do |issue|
           if todo = Things::Todo.find(name_with_id(issue))
             todo.area = area
-            unless todo.completed?
-              todo.status = issue.state.to_status
-            else
+            if todo.completed? and issue.state.to_s == 'open'
               sync_back_to_github << todo
+            else
+              todo.status = issue.state.to_status
             end
             todo.notes = issue.body
             todo.save
