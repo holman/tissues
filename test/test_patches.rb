@@ -23,3 +23,9 @@ context "Things::Todo" do
     assert_equal nil, todo.number
   end
 end
+
+context "APICache" do
+  test "silenced" do
+    assert_equal APICache::MemoryStore, APICache.store.class
+  end
+end

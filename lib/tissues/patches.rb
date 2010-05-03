@@ -13,3 +13,13 @@ class Things::Todo
     name.scan(/\[\#([0-9]+)\]/).first
   end
 end
+
+class APICache
+  class << self
+    def store # :nodoc:
+      @store ||= begin
+        APICache::MemoryStore.new
+      end
+    end    
+  end
+end
