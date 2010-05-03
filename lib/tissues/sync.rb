@@ -20,7 +20,13 @@ module Tissues
 
         repository = Repository.find(:name => origin_path.split('/').last,
                                      :user => origin_path.split('/').first)
-        repository.all_issues.each do |issue|
+        all_issues = repository.all_issues
+        
+        if all_issues.size > 0
+          puts "Syncing #{simple_plural(all_issues.size,'issue')}" 
+        end
+        
+        all_issues.each do |issue|
           if todo = Things::Todo.find(name_with_id(issue))
             todo.area = area
             if todo.completed? and issue.state.to_s == 'open'
@@ -41,7 +47,9 @@ module Tissues
           end
           local_todos.reject!{|todo| todo.name == name_with_id(issue)}
         end
-
+        
+        puts "Pushing #{simple_plural(local_todos.size,'new issue')}"+
+             " to GitHub" if local_todos.size > 0
         local_todos.each do |todo|
           issue = Issue.open(
             :params => {
@@ -56,6 +64,9 @@ module Tissues
           todo.reference.area.set(area.reference) # resave area association
         end
 
+        puts "Updating the status of "+
+             "#{simple_plural(sync_back_to_github.size,'issue')} "+
+             "on GitHub" if sync_back_to_github.size > 0
         sync_back_to_github.each do |todo|
           issue = Issue.find(:repository => repository, :number => todo.number)
           (todo.status == 'open') ? issue.reopen! : issue.close!
