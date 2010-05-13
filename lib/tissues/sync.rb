@@ -18,8 +18,8 @@ module Tissues
         local_todos = area.todos
         sync_back_to_github = []
 
-        repository = Repository.find(:name => origin_path.split('/').last,
-                                     :user => origin_path.split('/').first)
+        repository = Repository.find(:name => github_repo.split('/').last,
+                                     :user => github_repo.split('/').first)
         all_issues = repository.all_issues
         
         if all_issues.size > 0
@@ -76,18 +76,32 @@ module Tissues
 
     def area
       return @area if defined? @area
-      @area = Things::Area.find(origin_path) || 
-              Things::Area.create(:name => origin_path)
+      @area = Things::Area.find(github_repo) || 
+              Things::Area.create(:name => github_repo)
     end
     
-    def origin_path
-      return @origin_path if defined? @origin_path
-      @origin_path = `git remote -v | grep fetch`.
+    def github_repo
+      different_remote? ? local_remote_path : git_remote_path
+    end
+    
+    def different_remote?
+      File.exist?('.tissues')
+    end
+    
+    def git_remote_path
+      cmd('git remote -v | grep fetch').
                       split(':').
                       last.
                       split('.git ').
                       first
     end
-
+    
+    def local_remote_path
+      File.new('.tissues').readline.chomp
+    end
+    
+    def cmd(command)
+      `#{command}`
+    end
   end
 end

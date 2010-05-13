@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'test/unit'
 require 'spec/mini'
+require 'mocha'
 
 require 'tissues'
 
